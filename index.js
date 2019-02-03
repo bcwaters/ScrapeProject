@@ -1,6 +1,17 @@
 'use strict';
-
 const puppeteer = require('puppeteer');
+const express = require('express')
+const bodyParser= require('body-parser')
+const app = express()
+const tesseract= require('node-tesseract-ocr');
+const tesseractConfig= {
+	lang: 'eng',
+	oem: 1, 
+	psm:3
+}
+const fs = require('fs');
+const sys = require('sys');
+const exec = require('child_process').exec;
 
 async function scrapeData(_businessName, res) {
 	const browser = await puppeteer.launch();
@@ -57,37 +68,29 @@ async function scrapeData(_businessName, res) {
   await browser.close();
 }
 
-const express = require('express')
-const bodyParser= require('body-parser')
-const app = express()
+
 app.use(bodyParser.urlencoded({extended: true}))
 const port = 3000
 app.use(express.static('./'));
 app.get('/', (req, res) => res.sendFile(__dirname + '/clientPage.html'))
 
-var PDFImage = require("pdf-image").PDFImage;
- const tesseract= require('node-tesseract-ocr');
 
-const config= {
-	lang: 'eng',
-	oem: 1, 
-	psm:3
-}
-
-const fs = require('fs');
-
-app.listen(port, () => {
-	var pdfImage = new PDFImage("./test.pdf",
-	{		convertOptions: { "-quality": "100" }});
-	
-	pdfImage.convertPage(0).then(function (imagePath) {
-		console.log("called pdf converteer")
-		fs.existsSync("./test-0.png") // => true
-	},  function(err){console.log(err)}).then(
-		tesseract.recognize('wow.png', config)
+function performOCR(imageToCheck){
+		tesseract.recognize(imageToCheck, tesseractConfig)
   		.then(text => {
     			fs.writeFile("./ocr.txt", text, function(err){})
-  		}).catch(err => { console.log('error:', err) }))	
+  		}).catch(err => { console.log('error:', err) })	
+}
+app.listen(port, () => {
+		//write code to extract images with pdfimages then use convert from imagemagick
+		//$ pdfimages -list fileName.pdf
+		//$ pdfimages fileName.pdf fileName   # save in .ppm format
+		//$ convert fileName-000.ppm fileName-000.png
+		
+		//feed convert pdf image into this function to write the file
+		performOCR('wow.png')
+		
+		
 	
 	console.log('Example app listening on porasdft ${port}!')
 	}
