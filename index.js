@@ -76,7 +76,7 @@ app.listen(port, () => {
 	pdfImage.convertPage(0).then(function (imagePath) {
 		console.log("called pdf converteer")
 		fs.existsSync("./convertedPDF.png") // => true
-	}).catch((e) => console.log("convert Failed error: " + e.toString()));
+	}, , function(err){console.log(err);}).catch((e) => console.log("convert Failed error: " + e.toString()));
 	console.log('Example app listening on porasdft ${port}!')
 	}
 )
