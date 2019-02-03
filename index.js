@@ -66,18 +66,28 @@ app.use(express.static('./'));
 app.get('/', (req, res) => res.sendFile(__dirname + '/clientPage.html'))
 
 var PDFImage = require("pdf-image").PDFImage;
- 
+ const tesseract= require('node-tesseract-ocr');
 
+const config= {
+	lang: 'eng',
+	oem: 1, 
+	psm:3
+}
 
+const fs = require('fs');
 
 app.listen(port, () => {
-	var pdfImage = new PDFImage("./test.pdf");
-	console.log("calling pdfimage")
+	var pdfImage = new PDFImage("./test.pdf",
+	{		convertOptions: { "-quality": "100" }});
+	
 	pdfImage.convertPage(0).then(function (imagePath) {
 		console.log("called pdf converteer")
-		fs.existsSync("./convertedPDF.png") // => true
-	},  function(err){console.log(err)})
-	
+		fs.existsSync("./test-0.png") // => true
+	},  function(err){console.log(err)}).then(
+		tesseract.recognize('wow.png', config)
+  		.then(text => {
+    			fs.writeFile("./ocr.txt", text, function(err){})
+  		}).catch(err => { console.log('error:', err) }))	
 	
 	console.log('Example app listening on porasdft ${port}!')
 	}
