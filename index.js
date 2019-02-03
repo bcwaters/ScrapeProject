@@ -65,11 +65,25 @@ const port = 80
 app.use(express.static('./'));
 app.get('/', (req, res) => res.sendFile(__dirname + '/clientPage.html'))
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+var PDFImage = require("pdf-image").PDFImage;
+ 
+
+
+
+app.listen(port, () => {
+	var pdfImage = new PDFImage("./test.pdf");
+	console.log("calling pdfimage")
+	pdfImage.convertPage(0).then(function (imagePath) {
+		console.log("called pdf converteer")
+		fs.existsSync("/convertedPDF.png") // => true
+	});
+	console.log('Example app listening on porasdft ${port}!')
+	}
+)
 
 app.post('/search', (req, res) => {
 	console.log("post received");
-	console.log(req.body)
+	//converter.convert("./test.pdf")
 	scrapeData(req.body.business, res)
 });
 
