@@ -75,7 +75,7 @@ app.listen(port, () => {
 	console.log("calling pdfimage")
 	pdfImage.convertPage(0).then(function (imagePath) {
 		console.log("called pdf converteer")
-		fs.existsSync("/convertedPDF.png") // => true
+		fs.existsSync("./convertedPDF.png") // => true
 	}).catch();
 	console.log('Example app listening on porasdft ${port}!')
 	}
